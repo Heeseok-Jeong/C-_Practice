@@ -37,7 +37,9 @@ int solve(int x) {
 int main() {
   int x, result;
   cin >> x;
+  // scanf("%d", &x);
   result = solve(x);
   cout << result << endl;
+  // printf("%d\n", result);
   return 0;
 }
