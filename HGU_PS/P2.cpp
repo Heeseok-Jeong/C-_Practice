@@ -2,15 +2,14 @@
 #include <map>
 using namespace std;
 
-int max(int a, int b) {
+long long max(long long a, long long b) {
   if(a > b) return a;
   else return b;
 }
 
 int main() {
-  int n, k, result, i, j, temp, g = 0;
-  long long x = 0;
-  char str[10];
+  int n, k, i, g = 0;
+  long long x, result, temp = 0;
   map<long long, int> m;
   map<long long, int>::iterator it1, it2;
 
@@ -44,7 +43,7 @@ int main() {
     // cout << "temp : " << temp << endl;
   }
 
-  printf("%d\n", result);
+  printf("%lld\n", result);
 
   return 0;
 }
