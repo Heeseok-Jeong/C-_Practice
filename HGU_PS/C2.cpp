@@ -20,16 +20,33 @@ int max(int a, int b) {
   else return b;
 }
 
-void quick_sort_des(int arr[][500], Point order[n*n]) {
-  for(int i = 0; i < n; i++) {
-    for(int j = 0; j < n; j++) {
-
+void quick_sort_des(int arr[25000], int start, int end, Point order[25000]) {
+  if(start >= end) {
+    return;
+  }
+  int pivot = start;
+  int up = start+1;
+  int down = end;
+  while(up <= down) {
+    while(up <= end && arr[up] >= arr[pivot]) {
+      up++;
+    }
+    while(down > start && arr[down] <= arr[pivot]) {
+      down--;
+    }
+    if(up > down) {
+      swap(arr[down], arr[pivot]);
+      swap(order[down], order[pivot]);
+    } else {
+      swap(arr[up], arr[down]);
+      swap(order[up], order[down]);
     }
   }
+    quick_sort_des(arr, start, down-1, order);
+    quick_sort_des(arr, down+1, end, order);
 }
 
 int compute_difficulty(int arr[][500], int start, int row, int col, int result) {
-  int temp;
   int val = arr[row][col];
   // cout << "row : " << row <<", col : " << col << endl;
   if(val == -1) {
@@ -61,7 +78,7 @@ int main() {
   int i, j, result, row, col, val, gap, small, temp;
   scanf("%d", &n);
   int arr[500][500], arr2[25000];
-  Point order[n*n], p;
+  Point order[25000], p;
   list<Point> stack;
 
   //입력
@@ -70,14 +87,23 @@ int main() {
       scanf("%d", &temp);
       arr[i][j] = temp;
       arr2[n*i+j] = temp;
+      p.x = i;
+      p.y = j;
+      order[n*i+j] = p;
     }
   }
+
+  // for(i=0;i<n*n;i++) {
+  //   cout << order[i].x << " " << order[i].y << ", ";
+  // }
+  // cout << endl;
+
   //값순서 내림차순 정렬 -> order[0]에는 값이 가장 큰 좌표 [x, y] 있음
-  // quick_sort_des(arr, order);
-  for(i=0;i<n*n;i++) {
-    scanf("%d %d", &p.x, &p.y);
-    order[i] = p;
-  }
+  quick_sort_des(arr2, 0, n*n-1, order);
+  // for(i=0;i<n*n;i++) {
+  //   scanf("%d %d", &p.x, &p.y);
+  //   order[i] = p;
+  // }
 
 
   // for(i=0;i<n*n;i++) {
@@ -105,8 +131,6 @@ int main() {
 // 2 2
 // 0 0
 // 1 3
-  // cout << "1 : " << arr << endl;
-  // result = max(result, compute_difficulty(arr, 1, 1, 1, result));
 
   //order 순서대로 돌기
   small = arr[order[n*n-1].x][order[n*n-1].y];
@@ -134,6 +158,6 @@ int main() {
 
     result = max(result, compute_difficulty(arr, val, row, col, result));
   }
-  // printf("another : %d\n", result);
+  printf("%d\n", result);
   return 0;
 }
