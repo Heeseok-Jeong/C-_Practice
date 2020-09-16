@@ -20,7 +20,7 @@ int max(int a, int b) {
   else return b;
 }
 
-void quick_sort_des(int arr[25000], int start, int end, Point order[25000]) {
+void quick_sort_des(int arr[250000], int start, int end, Point order[250000]) {
   if(start >= end) {
     return;
   }
@@ -77,8 +77,8 @@ int compute_difficulty(int arr[][500], int start, int row, int col, int result) 
 int main() {
   int i, j, result, row, col, val, gap, small, temp;
   scanf("%d", &n);
-  int arr[500][500], arr2[25000];
-  Point order[25000], p;
+  int arr[500][500], arr2[250000];
+  Point order[250000], p;
   list<Point> stack;
 
   //입력
