@@ -4,11 +4,6 @@ using namespace std;
 
 int n;
 
-struct Carrier {
-  bool full;
-  int val;
-};
-
 void swap(int *a, int *b) {
   int temp = *a;
   *a = *b;
@@ -45,7 +40,7 @@ void quick_sort_des(vector<int> &arr, int start, int end) {
 }
 
 int main() {
-  int m, i, j, temp, result, size, over, under;
+  int m, i, j, temp, result, size, over, a_under, new_a_under;
   vector<int> arr;
 
   scanf("%d", &m);
@@ -57,48 +52,29 @@ int main() {
     arr.push_back(temp);
   }
   size = arr.size();
-  under = size - over;
+  a_under = size - over;
   arr.resize(size);
-
-  // for(i=0; i<size; i++) {
-  //   cout << arr[i] << " ";
-  // }
-  // cout << endl;
-
 
   quick_sort_des(arr, 0, size-1);
 
-  // for(i=0; i<size; i++) {
-  //   cout << arr[i] << " ";
-  // }
-  // cout << endl;
-  // cout << "1 : " << result << endl;
-  vector<bool> full(over);
-  for(i = over; i < size; i++) {
-    temp = arr[i];
-    for(j = 0; j < over; j++) {
-      if(temp + arr[j] <= m && full[j] == false) {
-        // cout << "temp : " << temp << endl;
-        under--;
-        full[j] = true;
-        break;
-      }
+  new_a_under = a_under;
+  j = size-1;
+  for(i = 0; i < over; i++) {
+    if(arr[i]+arr[j] <= m) {
+      j--;
+      new_a_under--;
     }
   }
-  if(under%2 == 0) {
-    result = under/2;
+
+  if(new_a_under%2 == 0) {
+    result = new_a_under/2;
   } else {
-    result = under/2 + 1;
+    result = new_a_under/2 + 1;
   }
-  // cout << "2 : " << result << endl;
-  // cout << "over : " << over << endl;
-  // cout << "under : " << under << endl;
-  // cout << "under after : " << result << endl;
+
   result += over;
-  // cout << "3 : " << result << endl;
-  cout << result;
-  // cout << result << endl;
-  // cout << endl;
-  // return 0;
-  exit(0);
+
+  printf("%d", result);
+
+  return 0;
 }
