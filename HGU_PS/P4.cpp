@@ -7,16 +7,13 @@ vector<int> disk_info;
 int top_rod[4];
 
 int rec(int x, int s, int d, int r, int count) {
-  if(!((top_rod[disk_info[s]] == x)) && (top_rod[disk_info[d]] <= x)) {
-    count = rec(x-1, disk_info[x-1], r, d, count);
-  }
-
-  if(s == d) {
-    count = rec(x-1, disk_info[x-1], d, r, count);
-  } else {
-    if(s == r) {
-      count += (int(pow(2.0, x)) - 1);
+  if(x > 0)  {
+    if(s == d) {
+      count = rec(x-1, disk_info[x-1], d, 6-disk_info[x-1]-d, count);
     } else {
+      if(!((top_rod[s] == x) && (top_rod[d] > x))) {
+        count = rec(x-1, disk_info[x-1], r, 6-disk_info[x-1]-r, count);
+      }
       count += int(pow(2.0, x-1));
     }
   }
@@ -37,23 +34,6 @@ int main() {
     top_rod[i] = temp;
   }
 
-  if(n == 1 && disk_info[1] == k) {
-    result = 0;
-  } else {
-    result = rec(n, disk_info[n], k, 6-disk_info[n]-k, result);
-  }
-
-  // disk_info 확인
-  for(i = 0; i < n+1; i++) {
-    cout << disk_info[i] << " ";
-  }
-  cout << endl;
-  // top_rod 확인
-  cout << "r1 : " << top_rod[1] << endl;
-  cout << "r2 : " << top_rod[2] << endl;
-  cout << "r3 : " << top_rod[3] << endl;
-
+  result = rec(n, disk_info[n], k, 6-disk_info[n]-k, result);
   printf("%d\n", result);
-
-
 }
