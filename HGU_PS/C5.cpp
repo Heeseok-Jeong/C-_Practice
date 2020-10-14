@@ -1,75 +1,52 @@
 #include <iostream>
-#include <math.h>
+#include <vector>
+#include <map>
+#include <cmath>
 
 using namespace std;
 
-struct balloon {
+struct Balloon {
   int x;
   int limit_r;
   double r;
 };
 
-const int N_MAX = 10^5;
-const int X_MAX = 10^9;
-
-double compute_r(balloon b_pre, balloon b_i) {
-  double dist, diff, r = 0;
-  int limit_dist = b_pre.r + b_i.limit_r;
-  // cout << "limit_dist : " << limit_dist << endl;
-
-  // dist = sqrt(pow(b_pre.x - b_i.x, 2) + pow(b_pre.r - b_i.limit_r, 2));
-  dist = sqrt((b_pre.x - b_i.x)*(b_pre.x - b_i.x) + (b_pre.r - b_i.limit_r)*(b_pre.r - b_i.limit_r));
-  diff = limit_dist - dist;
-  // printf("dist : %lf, diff : %lf\n", dist, diff);
-  dist = round(dist * double(10^5));
-
-  if(diff > 0)
-    // r = (pow(b_pre.x, 2) - 2*b_pre.x*b_i.x + pow(b_i.x, 2)) / (4*b_pre.r);
-    r = (b_pre.x*b_pre.x - 2*b_pre.x*b_i.x + b_i.x*b_i.x) / (4*b_pre.r);
-  else
-    r = b_i.limit_r;
-  // printf("r : %lf\n", r);
-  return r;
-}
-
 int main() {
   int n, i = 0;
-  balloon balloons[N_MAX];
-  for(i = 0; i < N_MAX; i++) {
-    balloons[i].x = 0;
-    balloons[i].r = 0;
-    balloons[i].limit_r = 0;
-  }
+  vector<Balloon> balloons;
 
   scanf("%d", &n);
 
   for(i = 0; i < n; i++) {
-    int x_i, max_r_i;
-    scanf("%d %d", &x_i, &max_r_i);
-    balloons[i].x = x_i;
-    balloons[i].limit_r = max_r_i;
+    int x_i, limit_r_i;
+    scanf("%d %d", &x_i, &limit_r_i);
+    Balloon balloon_i;
+    balloon_i.x = x_i;
+    balloon_i.limit_r = limit_r_i;
+    balloon_i.r = 0;
+    balloons.push_back(balloon_i);
   }
 
-
+  double left_x_i, r, min_r = 0;
+  multimap<double, int, greater<double> > sorted_right;
+  multimap<double, int, greater<double> >::iterator it_mm;
   balloons[0].r = balloons[0].limit_r;
+  sorted_right.insert(pair<double, int>(balloons[0].x+balloons[0].r, 0));
 
   for(i = 1; i < n; i++) {
-    double min_r = balloons[i].limit_r;
-    // printf("min_r : %lf\n", min_r);
-    for(int j = 0; j < i; j++) {
-      // cout << "pre : " << j << ", i : " << i << endl;
-      // cout << "pre_x : " << balloons[j].x << ", pre_r : " << balloons[j].r << endl;
-      // cout << "i_x : " << balloons[i].x << ", i_r : " << balloons[i].r << endl;
-      double r = compute_r(balloons[j], balloons[i]);
-      if(min_r > r)
-        min_r = r;
-      // printf("r : %lf\n", min_r);
+    min_r = balloons[i].limit_r;
+    left_x_i = balloons[i].x - min_r;
+    if(sorted_right.begin()->first > left_x_i) {
+      for(it_mm = sorted_right.begin(); it_mm != sorted_right.end() && it_mm->first > left_x_i; it_mm++) {
+        r = pow(balloons[i].x - balloons[it_mm->second].x, 2) / (4*balloons[it_mm->second].r);
+        if(min_r > r)
+          min_r = r;
+      }
     }
     balloons[i].r = min_r;
+    sorted_right.insert(pair<double, int>(balloons[i].x + balloons[i].r, i));
   }
 
-  // 출력
-  // cout << endl;
   for(i = 0; i < n; i++) {
     printf("%.3lf\n", balloons[i].r);
   }
