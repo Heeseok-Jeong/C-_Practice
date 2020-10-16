@@ -5,32 +5,26 @@
 
 using namespace std;
 
-int h_arr[5] = {0};
-int w_arr[5] = {0};
-int poly[5][4][4] = {0};
-int square[4][4] = {0};
-int sorted_index_list[5] = {0};
+const int MAX_SQUARE_SIDE = 8;
+const int MAX_N = 5;
+const int MAX_POLY_SIDE = 4;
+
+int h_arr[MAX_N] = {0};
+int w_arr[MAX_N] = {0};
+int poly[MAX_N][MAX_POLY_SIDE][MAX_POLY_SIDE] = {0};
+int square[MAX_SQUARE_SIDE][MAX_SQUARE_SIDE] = {0};
+int sorted_index_list[MAX_N] = {0};
 bool found_answer = false;
 vector<vector<vector<int> > > possible_point;
 
-void make_square(int depth, int n, int x, int pre_square[][4]) {
+void make_square(int depth, int n, int x, int pre_square[][MAX_SQUARE_SIDE]) {
   int a, b, i, j, k, sorted_index = 0;
-  int cur_square[4][4] = {0};
-  // cout << "depth : " << depth << ", n : " << n << ", x : " << x << endl;
-  // cout << "pre_square" << endl;
-  // for(int j = 0; j < 4; j++) {
-  //   for(int k = 0; k < 4; k++) {
-  //     cout << pre_square[j][k] << " ";
-  //   }
-  //   cout << endl;
-  // }
-  // cout << endl;
+  int cur_square[MAX_SQUARE_SIDE][MAX_SQUARE_SIDE] = {0};
 
   if(depth == n) {
-    // cout << "clear" << endl;
     found_answer = true;
-    for(int j = 0; j < 4; j++) {
-      for(int k = 0; k < 4; k++) {
+    for(int j = 0; j < MAX_SQUARE_SIDE; j++) {
+      for(int k = 0; k < MAX_SQUARE_SIDE; k++) {
         square[j][k] = pre_square[j][k];
       }
     }
@@ -38,26 +32,13 @@ void make_square(int depth, int n, int x, int pre_square[][4]) {
   }
 
   sorted_index = sorted_index_list[depth];
-  // cout << "sorted_index : " << sorted_index << endl;
-
-  // cout << possible_point[1].size() << endl;
-  // cout << endl;
-  // cout << "possible_point" << endl << "pp size : " << possible_point.size() << endl;
-  // for(i = 0; i < possible_point.size(); i++) {
-  //   cout << "i : " << i << ", size : " << possible_point[i].size() << endl;
-  //   for(j = 0; j <= possible_point[i].size(); j++) {
-  //     cout << possible_point[i][j][0] << " " << possible_point[i][j][1] << endl;
-  //   }
-  // }
-
-  // cout << "pp[s_i].size : " << possible_point[sorted_index].size() << endl;
   for(i = 0; (i < possible_point[sorted_index].size()) && !found_answer; i++) {
     bool is_duplicated = false;
     a = possible_point[sorted_index][i][0];
     b = possible_point[sorted_index][i][1];
 
-    for(j = 0; j < 4; j++) {
-      for(k = 0; k < 4; k++) {
+    for(j = 0; j < MAX_SQUARE_SIDE; j++) {
+      for(k = 0; k < MAX_SQUARE_SIDE; k++) {
         cur_square[j][k] = pre_square[j][k];
       }
     }
@@ -73,27 +54,9 @@ void make_square(int depth, int n, int x, int pre_square[][4]) {
       }
     }
 
-    if(!is_duplicated) {
-      // cout << "a : " << a << ", b : " << b << endl;
-      // cout << "cur_square" << endl;
-      // for(j = 0; j < 4; j++) {
-      //   for(k = 0; k < 4; k++) {
-      //     cout << cur_square[j][k] << " ";
-      //   }
-      //   cout << endl;
-      // }
-      // cout << endl;
-
+    if(!is_duplicated)
       make_square(depth+1, n, x, cur_square);
-    }
-    // else
-    //   cout << "out!" << endl;
   }
-
-  // cout << "poss_size : " << possible_point.size() << endl;
-  // for(i = 0; i < possible_point.size(); i++) {
-  //   cout << possible_point[i][0] << ", " << possible_point[i][1] << endl;
-  // }
 }
 
 int main() {
@@ -119,39 +82,12 @@ int main() {
     sorted_each_count.insert(pair<int, int>(each_count, i));
   }
 
-  // // 입력 확인
-  // cout << "h_arr : ";
-  // for(i = 0; i < n; i++) {
-  //   cout << h_arr[i] << " ";
-  // }
-  // cout << endl << endl;;
-  //
-  // cout << "w_arr : ";
-  // for(i = 0; i < n; i++) {
-  //   cout << w_arr[i] << " ";
-  // }
-  // cout << endl << endl;
-  //
-  // cout << "poly" << endl;
-  // for(i = 0; i < n; i++) {
-  //   cout << "i : " << i << endl;
-  //   for(j = 0; j < h_arr[i]; j++) {
-  //     for(k = 0; k < w_arr[i]; k++) {
-  //       cout << poly[i][j][k] << " ";
-  //     }
-  //     cout << endl;
-  //   }
-  // }
-  // cout << "total_count : " << total_count << endl;
-
   i = 0;
   for(auto it = sorted_each_count.begin(); it != sorted_each_count.end(); it++) {
     sorted_index_list[i++] = it->second;
   }
 
-  // cout << endl;
-  for(x = 1; x < 5 && total_count != x*x; x++) {}
-  // cout << "x : " << x << endl;
+  for(x = 1; x <= MAX_SQUARE_SIDE && total_count != x*x; x++) {}
 
   for(i = 0; i < n; i++) {
     vector<vector<int> > point_list;
@@ -163,16 +99,14 @@ int main() {
         point_list.push_back(point);
       }
     }
-    // cout << "pl size : " << point_list.size() << endl;
     possible_point.push_back(point_list);
   }
-  // cout << endl;
 
   int depth = 0;
-  int init_square[4][4] = {0};
+  int init_square[MAX_SQUARE_SIDE][MAX_SQUARE_SIDE] = {0};
   make_square(depth, n, x, init_square);
 
-  if(found_answer && x <= 4) {
+  if(found_answer && x <= MAX_SQUARE_SIDE) {
     for(i = 0; i < x; i++) {
       for(j = 0; j < x; j++) {
         printf("%d ", square[i][j]);
@@ -182,6 +116,6 @@ int main() {
   }
   else
     printf("No solution possible\n");
-    // 반례 찾아야함
+
   return 0;
 }
