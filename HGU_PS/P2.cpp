@@ -1,49 +1,40 @@
 #include <iostream>
-#include <map>
+#include <queue>
+
 using namespace std;
 
-long long max(long long a, long long b) {
-  if(a > b) return a;
-  else return b;
-}
+struct cmp {
+  bool operator()(pair<long long, long long> p1, pair<long long, long long> p2) {
+    if(p1.first != p2.first)
+      return p1.first > p2.first;
+    else
+      return p1.second < p2.second;
+  }
+};
 
 int main() {
-  int n, k, i, g = 0;
-  long long x, result, temp = 0;
-  map<long long, int> m;
-  map<long long, int>::iterator it1, it2;
-
-  scanf("%d %d", &n, &k);
+  long long n, k, i, available_num, max_available_num = 0;
+  priority_queue<pair<long long, long long>, vector<pair<long long, long long> >, cmp> info;
+  scanf("%lld %lld", &n, &k);
 
   for(i = 0; i < n; i++) {
-    scanf("%d %lld", &g, &x);
-    m[x] = g;
+    long long x, g;
+    scanf("%lld %lld", &g, &x);
+    info.push(make_pair(x-k, g));
+    info.push(make_pair(x+k, g-2*g));
+
+    if(max_available_num < x && k == 0)
+      max_available_num = x;
   }
 
-  // for (it1 = m.begin(); it1 != m.end(); it1++)
-  //       cout << "key : " << it1->first << " value : " << it1->second << endl;
-
-  i = 0;
-  for(it1 = m.begin(); it1 != m.end(); it1++) {
-    // cout << "a : " << result << ", b : " << temp << endl;
-    result = max(result, temp);
-    if(i == n-1) {
-      result = max(result, it1->second);
-    } else {
-      temp = 0;
-      for(it2 = it1; it2 != m.end(); it2++) {
-        if(it2->first <= it1->first+2*k) {
-          temp += it2->second;
-        } else {
-          break;
-        }
-      }
-    }
-    i++;
-    // cout << "temp : " << temp << endl;
+  while(!info.empty()) {
+    pair<long long, long long> temp = info.top();
+    available_num += temp.second;
+    info.pop();
+    if(max_available_num < available_num)
+      max_available_num = available_num;
   }
 
-  printf("%lld\n", result);
-
+  printf("%lld\n", max_available_num);
   return 0;
 }
