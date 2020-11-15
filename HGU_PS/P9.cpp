@@ -1,6 +1,5 @@
 #include <iostream>
 #include <vector>
-#include <algorithm>
 
 using namespace std;
 
@@ -12,7 +11,6 @@ int main() {
     scanf("%lld %lld", &p, &spd);
     people_info.push_back(make_pair(p, spd));
   }
-  sort(people_info.begin(), people_info.end());
 
   vector<long long> groups;
   for(i = 0; i < n; i++) {
