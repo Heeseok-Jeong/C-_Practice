@@ -4,7 +4,7 @@
 
 using namespace std;
 
-vector<int> root_table;
+vector<int> root_table, heights;
 
 int find(int x) {
   if(x == root_table[x])
@@ -16,16 +16,26 @@ int find(int x) {
 void merge(int target, int source) {
   int root_t = find(target);
   int root_s = find(source);
-  if(root_t > root_s) {
-    root_table[target] = root_s;
+
+  if(heights[root_t] < heights[root_s])
+    root_table[root_t] = root_s;
+  else if(heights[root_t] > heights[root_s])
+    root_table[root_s] = root_t;
+  else {
+    if(root_s < root_t) {
+      int temp = root_s;
+      root_s = root_t;
+      root_t = temp;
+    }
+    root_table[root_s] = root_t;
+    heights[root_t]++;
   }
-  else if(root_t < root_s)
-    root_table[source] = root_t;
 }
 
 int main() {
   int n, i;
   scanf("%d", &n);
+  heights.assign(n+1, 1);
   vector<pair<int, int> > p_v;
   for(i = 0; i < n; i++) {
     int x, y;
@@ -42,17 +52,16 @@ int main() {
       if((p_v[i].first > p_v[j].first && p_v[i].second < p_v[j].second) \
         || (p_v[i].first < p_v[j].first && p_v[i].second > p_v[j].second))
       {
-        cout << "i : " << i << ", j : " << j << endl;
         merge(j, i);
-        for(int k = 0; k < n; k++)
-          cout << "k : " << k << ", table[k] : " << root_table[k] << endl;
       }
     }
   }
 
   set<int> disjoint_set;
-  for(i = 0; i < n; i++)
+  for(i = 0; i < n; i++) {
+    find(i);
     disjoint_set.insert(root_table[i]);
+  }
 
   cout << disjoint_set.size() << endl;
 
