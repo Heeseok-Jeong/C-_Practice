@@ -42,18 +42,24 @@ int main() {
   map<int, vector<int> > no_together_list;
 
   for(i = 0; i < n-1; i++) {
-    for(j = i+1; j < n; j++) {
+    int count = 2;
+    for(j = i+1; j < n && count != 0; j++) {
       if(buildings[j].first - buildings[i].first > 5)
         break;
 
-      if(buildings[i].first == buildings[j].first) {
-        if(buildings[j].second - buildings[i].second <= 5) {
-          no_together_list[i].push_back(j);
-        }
-      }
-      else if(sqrt(pow(buildings[i].first - buildings[j].first, 2) + pow(buildings[i].second - buildings[j].second, 2)) <= 5) {
+      if(abs(buildings[j].second - buildings[i].second) > 5)
+        continue;
+      // if(buildings[i].first == buildings[j].first) {
+      //   if(buildings[j].second - buildings[i].second <= 5) {
+      //     no_together_list[i].push_back(j);
+      //     count--;
+      //   }
+      // }
+      // else if(sqrt(pow(buildings[i].first - buildings[j].first, 2) + pow(buildings[i].second - buildings[j].second, 2)) <= 5) {
+      if(sqrt(pow(buildings[i].first - buildings[j].first, 2) + pow(buildings[i].second - buildings[j].second, 2)) <= 5) {
         // cout << "i : " << i << ", j : " << j << ", " << sqrt(pow(buildings[i].first - buildings[j].first, 2) + pow(buildings[i].second - buildings[j].second, 2)) << endl;
         no_together_list[i].push_back(j);
+        count--;
       }
     }
   }

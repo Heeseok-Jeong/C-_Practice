@@ -95,22 +95,25 @@ int main() {
 
 
   for(i = 0; i < n-1; i++) {
-    for(j = i+1; j < n; j++) {
+    int count = 2;
+    for(j = i+1; j < n && count != 0; j++) {
       if(buildings[j].first - buildings[i].first > 5)
         break;
 
-      if(buildings[i].first == buildings[j].first) {
-        if(buildings[j].second - buildings[i].second <= 5) {
-          merge(j, i);
-          graph[i][j] = 1;
-          graph[j][i] = 1;
-        }
-      }
-      else if(sqrt(pow(buildings[i].first - buildings[j].first, 2) + pow(buildings[i].second - buildings[j].second, 2)) <= 5) {
-        // cout << "i : " << i << ", j : " << j << ", " << sqrt(pow(buildings[i].first - buildings[j].first, 2) + pow(buildings[i].second - buildings[j].second, 2)) << endl;
+      if(abs(buildings[j].second - buildings[i].second) > 5)
+        continue;
+      // if(buildings[j].first - buildings[i].first + abs(buildings[j].second - buildings[i].second) <= 7) {
+      //   merge(j, i);
+      //   graph[i][j] = 1;
+      //   graph[j][i] = 1;
+      //   count--;
+      // }
+      // else if(sqrt(pow(buildings[i].first - buildings[j].first, 2) + pow(buildings[i].second - buildings[j].second, 2)) <= 5) {
+      if(sqrt(pow(buildings[i].first - buildings[j].first, 2) + pow(buildings[i].second - buildings[j].second, 2)) <= 5) {
         merge(j, i);
         graph[i][j] = 1;
         graph[j][i] = 1;
+        count--;
       }
     }
   }
