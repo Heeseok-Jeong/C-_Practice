@@ -3,54 +3,26 @@
 
 using namespace std;
 
-const int LIMIT_NUM = 10^6;
-vector<bool> is_square_num, is_visit;
-
 int main() {
-    long long min, max;
-    int n, i, j, count;
+    long long min, max, i, j, ans;
     scanf("%lld %lld", &min, &max);
-    n = max-min+1;
-    count = n-1;
-    is_square_num.assign(LIMIT_NUM+1, false);
-    is_visit.assign(LIMIT_NUM+1, false);
-    vector<bool> results;
-    results.assign(n, false);
-    
-    for(i = 2; i < LIMIT_NUM+1; i++) {
-        if(i > max)
-            break;
+    ans = max-min+1;
+
+    vector<bool> sieve(ans, false);
+    for(i = 2; i*i <= max; i++) {
+        long long min_q = min/(i*i);
+        if(min%(i*i) != 0)
+            min_q += 1;
         
-        if(!is_square_num[i]) {
-            int temp = i;
-            if(!is_visit[i]) {
-                while(temp <= max) {
-                    if(!is_visit[temp]) {
-                        is_visit[temp] = true;
-                    }
-                    temp *= i;
-                }
+        while(i*i*min_q <= max) {
+            if(sieve[i*i*min_q - min] == false) {
+                sieve[i*i*min_q - min] = true;
+                ans -= 1;
             }
-            else {
-                while(temp <= max) {
-                    if(!is_square_num[temp]) {
-                        is_square_num[temp] = true;
-                        if(min <= temp && temp <= max) {
-                            count--;
-                            cout << "temp : " << temp << endl;
-                        }
-                    }
-                    temp *= i;
-                }
-            }
+            min_q += 1;    
         }
     }
 
-    cout << count << endl;
-    
-
-
-
-
+    cout << ans << endl;
     return 0;
 }
