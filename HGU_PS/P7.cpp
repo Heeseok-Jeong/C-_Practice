@@ -3,16 +3,17 @@
 
 using namespace std;
 
+int n, i, j, len;
+int memo_sum[501][501];
+int initial_sum[501];
+int cable_len[501];
+
 int get_min(int a, int b) {
   if(a < b) return a;
   else return b;
 }
 
 int main() {
-  int n, i, j, len;
-  int memo_sum[501][501];
-  int initial_sum[501];
-  int cable_len[501];
   scanf("%d", &n);
   for(i = 1; i < n+1; i++) {
     scanf("%d", &cable_len[i]);
