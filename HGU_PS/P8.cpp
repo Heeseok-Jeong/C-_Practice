@@ -4,62 +4,60 @@
 
 using namespace std;
 
-struct cmp {
-  bool operator()(int n1, int n2) {
-    return n1 > n2;
+int n, d, m;
+vector<int> tasks;
+
+bool is_valid(int k) {
+  int i = 0;
+  int count;
+
+  for(int day = 1; day <= n && i < m; day++) {
+    for(count = 0; count < k && i < m; count++) {
+      if(day > tasks[i]+d){
+        return false;
+      }
+
+      if(day >= tasks[i])
+        i += 1;
+      else
+        break;
+
+    }
   }
-};
+
+  return true;
+}
 
 int main() {
-  int n, d, m, i, j, k;
+  int i, l, r, mid;
   scanf("%d %d %d", &n, &d, &m);
-  priority_queue<int, vector<int>, cmp> pq;
-  priority_queue<int, vector<int>, cmp> temp_pq;
+
+  priority_queue<int, vector<int> > pq;
   for(i = 0; i < m; i++) {
     int s;
     scanf("%d", &s);
-    s += d;
-    pq.push(s);
+    pq.push((-1)*s);
+  }
+  for(i = 0; i < m; i++) {
+    tasks.push_back((-1)*pq.top());
+    pq.pop();
   }
 
-  for(k = 1; k < n+1 && m/k > n; k++) {}
-  cout << "init_k : " << k << endl;
+  l = 0; 
+  r = m+1;
+  while(l+1 < r) {
+    mid = (l+r)/2;
 
-  for(; k < n; k++) {
-    cout << endl;
-    cout << "k : " << k << endl;
-    temp_pq = pq;
-    int day = 1;
-    int count = k;
-    bool is_done = true;
-    while(!temp_pq.empty()) {
-      cout << "day : " << day << endl;
-      int x = temp_pq.top();
-      temp_pq.pop();
-      count--;
-      cout << "x : "<< x << endl;
-      if(x < day) {
-        cout << "x < day" << endl;
-        is_done = false;
-        break;
-      }
-
-      if(count == 0) {
-        count = k;
-        day++;
-      }
-      else {
-        count--;
-      }
+    if(is_valid(mid)) {
+      r = mid;
     }
-
-    if(is_done) {
-      cout << "success!\n";
-      break;
+      
+    else {
+      l = mid;
     }
   }
 
-  printf("%d\n", k);
+  printf("%d\n", r);
 
   return 0;
 }
