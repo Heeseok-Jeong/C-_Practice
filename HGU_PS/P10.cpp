@@ -1,169 +1,124 @@
 #include <iostream>
 #include <vector>
-#include <algorithm>
-#include <set>
 
 using namespace std;
 
-int n;
-vector<int> root_table, heights, routes[451];
-vector<bool> visited;
-set<vector<int> > cycles;
-
-int find(int x) {
-  if(x == root_table[x])
-    return x;
-  else
-    return root_table[x] = find(root_table[x]);
-}
-
-void merge(int root_s, int root_t) {
-  if(heights[root_t] < heights[root_s])
-    root_table[root_t] = root_s;
-  else if(heights[root_t] > heights[root_s])
-    root_table[root_s] = root_t;
-  else {
-    if(root_s < root_s) {
-      int temp = root_s;
-      root_s = root_t;
-      root_t = temp;
-    }
-    root_table[root_s] = root_t;
-    heights[root_t]++;
-  }
-}
-
-bool check_same_root(int source, int target) {
-  int root_s = find(source);
-  int root_t = find(target);
-
-  if(root_s != root_t) {
-    merge(root_s, root_t);
-    return false;
-  }
-  else
-    return true;
-}
-
-void check_cycle(int source, int target, vector<int> cycle) {
-  cycle.push_back(source);
-  // cout << "source : " << source << ", target : " << target << endl;
-  visited[source] = true;
-
-  if(source == target) {
-    // cout << "yes!\n";
-    sort(cycle.begin(), cycle.end());
-    cycles.insert(cycle);
-    return;
-  }
-
-  for(int i = 1; i < n+1; i++) {
-    if(routes[source][i] && !visited[i]) {
-      check_cycle(i, target, cycle);
-      visited[i] = false;
-    }
-  }
-  // cout << "out\n";
-}
-
 int main() {
-  int b, i, j;
+  int n, b, i, j, ans = 0;
   scanf("%d %d", &n, &b);
-
-  vector<int> weights;
-  weights.assign(n+1, 0);
-  int max_sum = 0;
-  for(i = 1; i < n+1; i++) {
+  vector<int> weights(n+1, 0);
+  for(i = 0; i < n; i++) {
     int weight;
     scanf("%d", &weight);
-    weights[i] = weight;
-
-    if(max_sum < weight)
-      max_sum = weight;
+    weights[i]=  weight;
+    if(ans < weight)
+      ans = weight;
   }
 
-  root_table.assign(n+1, 0);
-  for(i = 1; i < n+1; i++) {
-    root_table[i] = i;
-  }
-
-  for(i = 0; i < n+1; i++) {
-    routes[i].assign(n+1, 0);
-  }
-
-  heights.assign(n+1, 1);
-
+  vector<int> vessels[450];
+  for(i = 0; i < 450; i++)
+    vessels[i].assign(n+1, 0);
+  vector<vector<int> > cluster_2;
   for(i = 0; i < b; i++) {
-    int target, source;
-    scanf("%d %d", &source, &target);
-
-    if(check_same_root(source, target)) {
-      // cout << "cycle!\n";
-      visited.assign(n+1, false);
-      vector<int> cycle;
-      check_cycle(source, target, cycle);
-      // cout << "cycle out\n";
-    }
-
-    routes[source][target] = 1;
-    routes[target][source] = 1;
-
-    int weight = weights[source] + weights[target];
-    if(max_sum < weight)
-      max_sum = weight;
-    // // cout << "root_table" << endl;
-    // for(int j = 0; j < n+1; j++)
-    //   cout << root_table[j] << ", ";
-    // cout << endl;
-  }
-  // cout << "all out!\n";
-
-  // cout << "routes" << endl;
-  // for(i = 1; i < n+1; i++) {
-  //   for(int j = 1; j < n+1; j++) {
-  //     cout << routes[i][j] << ", ";
-  //   }
-  //   cout << endl;
-  // }
-  // cout << endl;
-
-
-  for(auto cycle : cycles) {
-    for(auto node : cycle) {
-      cout << node << ", ";
-    }
-    cout << endl;
-    int sum = 0;
-    int cycle_size = cycle.size();
-    // cout << "cycle_size : " << cycle_size << endl;
-    if(cycle_size <= 3) {
-      for(i = 0; i < cycle_size; i++) {
-        sum += weights[cycle[i]];
-      }
-    }
-    else {
-      bool is_all_connected = true;
-      for(i = 0; i < cycle_size-1 && is_all_connected; i++) {
-        for(int j = i+1; j < cycle_size; j++) {
-          if(!routes[cycle[i]][cycle[j]]) {
-            is_all_connected = false;
-            break;
-          }
-        }
-      }
-
-      if(is_all_connected) {
-        for(i = 0; i < cycle_size; i++) {
-          sum += weights[cycle[i]];
-        }
-      }
-    }
-    // cout << "sum : " << sum << endl;
-
-    if(max_sum < sum)
-      max_sum = sum;
+    int a, b;
+    scanf("%d %d", &a, &b);
+    a -= 1;
+    b -= 1;
+    vessels[a][b] = 1;
+    vessels[b][a] = 1;
+    if(ans < weights[a]+weights[b])
+      ans = weights[a]+weights[b];
+    vector<int> v;
+    v.push_back(a);
+    v.push_back(b);
+    cluster_2.push_back(v);
   }
 
-  cout << max_sum << endl;
+  vector<vector<int> > cluster_3;
+  for(i = 0; i < cluster_2.size(); i++) {
+    for(j = 0; j < n; j++) {
+      if(vessels[j][cluster_2[i][0]] == 1 && vessels[j][cluster_2[i][1]] == 1) {
+        vector<int> v;
+        v.push_back(j);
+        v.push_back(cluster_2[i][0]);
+        v.push_back(cluster_2[i][1]);
+        cluster_3.push_back(v);
+        if(ans < weights[j] + weights[cluster_2[i][0]] + weights[cluster_2[i][1]])
+          ans = weights[j] + weights[cluster_2[i][0]] + weights[cluster_2[i][1]];
+      }
+    }
+  }
+
+  for(i = 0; i < cluster_3.size(); i++) {
+    for(j = 0; j < n; j++) {
+      if(vessels[j][cluster_3[i][0]] == 1 && vessels[j][cluster_3[i][1]] == 1 && vessels[j][cluster_3[i][2]] == 1) { 
+        if(ans < weights[j] + weights[cluster_3[i][0]] + weights[cluster_3[i][1]] + weights[cluster_3[i][2]])
+          ans = weights[j] + weights[cluster_3[i][0]] + weights[cluster_3[i][1]] + weights[cluster_3[i][2]];
+      }
+    }
+  }
+
+  printf("%d\n", ans);
+
   return 0;
 }
+
+
+
+// #include <iostream>
+// #include <vector>
+// #include <tuple>
+
+// using namespace std;
+
+// int main() {
+//   int n, b, i, j, ans = 0;
+//   scanf("%d %d", &n, &b);
+//   vector<int> weights;
+//   for(i = 0; i < n; i++) {
+//     int weight;
+//     scanf("%d", &weight);
+//     weights.push_back(weight);
+//     if(ans < weight)
+//       ans = weight;
+//   }
+//   vector<int> vessels[450];
+//   for(i = 0; i < 450; i++)
+//     vessels[i].assign(n, 0);
+//   typedef vector<tuple<int, int> > c2;
+//   c2 cluster_2;
+//   for(i = 0; i < b; i++) {
+//     int a, b;
+//     scanf("%d %d", &a, &b);
+//     vessels[a][b] = 1;
+//     vessels[b][a] = 1;
+//     if(ans < weights[a]+weights[b])
+//       ans = weights[a]+weights[b];
+//     cluster_2.push_back(make_tuple(a, b));
+//   }
+
+//   typedef vector<tuple<int, int, int> > c3;
+//   c3 cluster_3;
+//   for(auto it = cluster_2.begin(); it != cluster_2.end(); it++) {
+//     for(i = 0; i < n; i++) {
+//       if(vessels[i][get<0>(*it)] == 1 && vessels[i][get<1>(*it)] == 1) {
+//         cluster_3.push_back(make_tuple(get<0>(*it), get<1>(*it), i));
+//         if(ans < weights[get<0>(*it)] + weights[get<1>(*it)] + weights[i])
+//           ans = weights[get<0>(*it)] + weights[get<1>(*it)] + weights[i];
+//       }
+//     }
+//   }
+
+//   for(auto it = cluster_3.begin(); it != cluster_3.end(); it++) {
+//     for(i = 0; i < n; i++) {
+//       if(vessels[i][get<0>(*it)] == 1 && vessels[i][get<1>(*it)] == 1 && vessels[i][get<2>(*it)] == 1) {
+//         if(ans < weights[get<0>(*it)] + weights[get<1>(*it)] + weights[get<2>(*it)] + weights[i])
+//           ans < weights[get<0>(*it)] + weights[get<1>(*it)] + weights[get<2>(*it)] + weights[i];
+//       }
+//     }
+//   }
+
+//   printf("%d\n", ans);
+
+//   return 0;
+// }
