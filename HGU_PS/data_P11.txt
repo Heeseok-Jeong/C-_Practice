@@ -41,3 +41,14 @@ aaa
 dbe
 ----
 0
+
+4
+cb
+ba
+ac
+dc
+----
+dc
+cb
+ba
+ac
