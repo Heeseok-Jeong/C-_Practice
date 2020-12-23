@@ -5,6 +5,30 @@
 
 using namespace std;
 
+int graph[26][26] = {0};
+bool done = false;
+vector<int> words_index;
+
+void browse(int x, int d, int n) {
+  words_index.push_back(x);
+  for(int i = 0; i < words_index.size(); i++) {
+    cout << words_index[i] << ", ";
+  }
+  cout << endl;
+  if(d == n) {
+    done = true;
+    return;
+  }
+  
+  for(int i = 0; i < 26; i++) {
+    if(graph[x][i] > 0) {
+      graph[x][i] -= 1;
+      browse(i, d+1, n);
+    }
+  }
+  
+}
+
 int main() {
   int n, i, j;
   scanf("%d", &n);
@@ -19,34 +43,77 @@ int main() {
     string word;
     cin >> word;
     words.push_back(word);
-    // cout << "back : " << word.back() << ", " << int(word.back())
-    alpha_degrees[int(word.back())-97].second += 1;
-    alpha_degrees[int(word.front())-97].first += 1; 
-    
+    alpha_degrees[int(word.front())-97].second += 1;
+    alpha_degrees[int(word.back())-97].first += 1; 
+  }
+
+  for(i = 0; i < 26; i++) {
+    cout << static_cast<char> (i+97) << " : " << alpha_degrees[i].first << ", " << alpha_degrees[i].second << endl;
   }
 
   int start_count = 0;
   int end_count = 0;
-  bool possible = false;
+  bool trail_possible = false;
+  bool circle_possible = true;
+  int start_i = 0;
   for(i = 0; i < 26; i++) {
-    if(start_count > 1 || end_count > 2)
-      break;
     int in_degree = alpha_degrees[i].first;
     int out_degree = alpha_degrees[i].second;
-    if(in_degree + 1 == out_degree && in_degree != 0)
+    if(in_degree + 1 == out_degree) {
       start_count += 1;
-    else if(in_degree == out_degree + 1 && out_degree != 0)
+      start_i = i;
+      circle_possible = false;
+    }
+    else if(in_degree == out_degree + 1) {
       end_count += 1;
+      circle_possible = false;
+    }
     else if(in_degree != out_degree){
       break;
+      circle_possible = false;
     }
-    cout << static_cast<char> (i+97) << " : " << alpha_degrees[i].first << ", " << alpha_degrees[i].second << endl;
   }
 
-  if(start_count == 1 && end_count == 1)
-    possible = true;
+  if((start_count == 1 && end_count == 1))
+    trail_possible = true;
 
-  cout << possible << endl;
+  if(trail_possible)
+    cout << "trail\n";
+  else if(circle_possible)
+    cout << "circle\n";
+  else
+    cout << "nothing\n";
+
+  if(trail_possible || circle_possible) {
+    sort(words.begin(), words.end());
+    for(i = 0; i < n; i++) {
+      // cout << words[i] << endl;
+      int from = int(words[i].front())-97;
+      int to = int(words[i].back())-97;
+      graph[from][to] += 1;
+    }
+
+    for(i = 0; i < 26; i++) {
+      for(j = 0; j < 26; j++) {
+        cout << graph[i][j] << ", ";
+      }
+      cout << endl;
+    }
+    // graph[start_i][start_i] -= 1;
+    browse(start_i, 1, n);
+
+    if(done) {
+      for(i = 0; i < words_index.size(); i++)
+        cout << words[words_index[i]] << endl;
+    }
+    else
+      printf(0);
+    }
+  else {
+    printf(0);
+  }
+  
+  
 
   return 0;
 }
